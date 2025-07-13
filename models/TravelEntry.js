@@ -13,7 +13,7 @@ const travelEntrySchema = new mongoose.Schema({
   description: {
     type: String
   },
-  location: {
+  location: { 
     type: String,
     required: true
   },

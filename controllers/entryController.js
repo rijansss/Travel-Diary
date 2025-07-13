@@ -4,6 +4,7 @@ const TravelEntry = require("../models/TravelEntry");
 exports.createEntry = async (req, res) => {
   const { title, description, location, date, isPublic } = req.body;
   try {
+    const imageUrls =req.files?.map((file)=>file.path)|| []
     const entry = await TravelEntry.create({
       user: req.user._id,
       title,
@@ -11,6 +12,7 @@ exports.createEntry = async (req, res) => {
       location,
       date,
       isPublic,
+      images:imageUrls,
     });
     res.status(201).json(entry);
   } catch (err) {
