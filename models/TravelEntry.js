@@ -26,6 +26,19 @@ const travelEntrySchema = new mongoose.Schema({
     default: false
   },
   images: [String], 
+  likes: [
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+],
+bookmarkedBy: [
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+],
+
 }, { timestamps: true });
 
 module.exports = mongoose.model("TravelEntry", travelEntrySchema);

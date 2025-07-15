@@ -130,3 +130,50 @@ exports.getUserStats = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch stats" });
   }
 };
+
+exports.toggleLikeEntry = async (req, res) => {
+  const entry = await TravelEntry.findById(req.params.id);
+
+  if (!entry) return res.status(404).json({ message: "Entry not found" });
+
+  const userId = req.user._id;
+  const liked = entry.likes.includes(userId);
+
+  if (liked) {
+    entry.likes.pull(userId); // unlike
+  } else {
+    entry.likes.push(userId); // like
+  }
+
+  await entry.save();
+  res.json({ liked: !liked, totalLikes: entry.likes.length });
+};
+
+exports.toggleBookmarkEntry = async (req, res) => {
+  const entry = await TravelEntry.findById(req.params.id);
+
+  if (!entry) return res.status(404).json({ message: "Entry not found" });
+
+  const userId = req.user._id;
+  const bookmarked = entry.bookmarkedBy.includes(userId);
+
+  if (bookmarked) {
+    entry.bookmarkedBy.pull(userId);
+  } else {
+    entry.bookmarkedBy.push(userId);
+  }
+
+  await entry.save();
+  res.json({ bookmarked: !bookmarked });
+};
+
+
+exports.getBookmarkedEntries = async (req, res) => {
+  const userId = req.user._id;
+
+  const entries = await TravelEntry.find({
+    bookmarkedBy: userId,
+  }).populate("user", "name");
+
+  res.json(entries);
+};
