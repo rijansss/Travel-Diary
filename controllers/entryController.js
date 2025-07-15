@@ -167,7 +167,6 @@ exports.toggleBookmarkEntry = async (req, res) => {
   res.json({ bookmarked: !bookmarked });
 };
 
-
 exports.getBookmarkedEntries = async (req, res) => {
   const userId = req.user._id;
 
@@ -176,4 +175,28 @@ exports.getBookmarkedEntries = async (req, res) => {
   }).populate("user", "name");
 
   res.json(entries);
+};
+
+exports.commentOnEntry = async (req, res) => {
+  const { text } = req.body;
+  const entry = TravelEntry.findById(req.params.id);
+  if (!entry) return res.status(404).json({ message: "Entry not found" });
+
+  const newComment = {
+    user: req.user._id,
+    text,
+  };
+  entry.comments.push(newComment);
+  await entry.save();
+
+  res.status(201).json({ message: "Comment added", comment: newComment });
+};
+
+exports.getEntryComments = async (req, res) => {
+  const entry = await TravelEntry.findById(req.params.Id)
+    .populate("comments.user", "name")
+    .select("comments");
+  if (!entry) return res.status(404).json({ message: "Entry not found" });
+
+  res.json(entry.comments);
 };

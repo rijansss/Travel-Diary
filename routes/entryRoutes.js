@@ -10,9 +10,11 @@ const {
   getUserStats,
   updateEntry,
   deleteEntry,
-   toggleLikeEntry,
+  toggleLikeEntry,
   toggleBookmarkEntry,
   getBookmarkedEntries,
+    commentOnEntry,
+  getEntryComments,
 } = require("../controllers/entryController");
 
 
@@ -22,6 +24,11 @@ router.post('/',protect,upload.array("images",5),createEntry);
 router.get("/", protect, getMyEntries);
 
 router.put("/like/:id", protect, toggleLikeEntry);
+// Add comment
+router.post("/:id/comment", protect, commentOnEntry);
+
+// Get all comments for a post
+router.get("/:id/comments", getEntryComments);
 
 // Bookmark/unbookmark
 router.put("/bookmark/:id", protect, toggleBookmarkEntry);
@@ -40,9 +47,6 @@ router.get("/:id", protect, getEntryById);
 router.put("/:id", protect, upload.array("images", 5), updateEntry);
 
 router.delete("/:id", protect, deleteEntry);
-
-
-
 
 
 
