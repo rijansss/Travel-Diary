@@ -4,7 +4,7 @@ const TravelEntry = require("../models/TravelEntry");
 exports.createEntry = async (req, res) => {
   const { title, description, location, date, isPublic } = req.body;
   try {
-    const imageUrls =req.files?.map((file)=>file.path)|| []
+    const imageUrls = req.files?.map((file) => file.path) || [];
     const entry = await TravelEntry.create({
       user: req.user._id,
       title,
@@ -12,7 +12,7 @@ exports.createEntry = async (req, res) => {
       location,
       date,
       isPublic,
-      images:imageUrls,
+      images: imageUrls,
     });
     res.status(201).json(entry);
   } catch (err) {
@@ -89,5 +89,44 @@ exports.deleteEntry = async (req, res) => {
     res.json({ message: "Entry deleted" });
   } catch (err) {
     res.status(500).json({ message: "Failed to delete entry" });
+  }
+};
+
+exports.getUserStats = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const year = req.query.year || new Date().getFullYear();
+
+    // Step 1: Fetch all user's entries in the selected year
+    const start = new Date(`${year}-01-01`);
+    const end = new Date(`${+year + 1}-01-01`);
+
+    const entries = await TravelEntry.find({
+      user: userId,
+      date: { $gte: start, $lt: end },
+    });
+
+    const total = entries.length;
+    const publicCount = entries.filter((e) => e.isPublic).length;
+    const privateCount = total - publicCount;
+
+    // Step 2: Group by month
+    const monthlyCounts = Array(12).fill(0); // [0, 0, ..., 0]
+
+    entries.forEach((entry) => {
+      const month = new Date(entry.date).getMonth(); // 0 - 11
+      monthlyCounts[month]++;
+    });
+
+    res.json({
+      year,
+      total,
+      public: publicCount,
+      private: privateCount,
+      monthly: monthlyCounts,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch stats" });
   }
 };
