@@ -145,6 +145,13 @@ exports.toggleLikeEntry = async (req, res) => {
   } else {
     entry.likes.push(userId); // like
   }
+  if(entry.user.toString()!== userId.toString()){
+    await sendNotification({
+      userId:entry.user,
+      message: `${req.user.name} liked ur entry `,
+       link: `/entries/public/${entry._id}`,
+    })
+  }
 
   await entry.save();
   res.json({ liked: !liked, totalLikes: entry.likes.length });
@@ -163,6 +170,14 @@ exports.toggleBookmarkEntry = async (req, res) => {
   } else {
     entry.bookmarkedBy.push(userId);
   }
+  if (!bookmarked && entry.user.toString() !== userId.toString()) {
+  await sendNotification({
+    userId: entry.user,
+    message: `${req.user.name} bookmarked your entry "${entry.title}"`,
+    link: `/entries/public/${entry._id}`,
+  });
+}
+
 
   await entry.save();
   res.json({ bookmarked: !bookmarked });
@@ -188,6 +203,14 @@ exports.commentOnEntry = async (req, res) => {
     text,
   };
   entry.comments.push(newComment);
+  if (entry.user.toString() !== req.user._id.toString()) {
+  await sendNotification({
+    userId: entry.user,
+    message: `${req.user.name} commented on your entry "${entry.title}"`,
+    link: `/entries/public/${entry._id}`,
+  });
+}
+
   await entry.save();
 
   res.status(201).json({ message: "Comment added", comment: newComment });

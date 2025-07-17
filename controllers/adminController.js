@@ -31,7 +31,6 @@ exports.flagEntryAsReported = async (req, res) => {
   }
 };
 
-
 exports.markEntryAsReviewed = async (req, res) => {
   try {
    const entry = await TravelEntry.findById(req.params.id);
