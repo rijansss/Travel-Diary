@@ -55,6 +55,15 @@ comments:[
     },
   },
 ],
+reported: {
+  type: Boolean,
+  default: false,
+},
+reviewed: {
+  type: Boolean,  
+  default: false,
+},
+
 
 }, { timestamps: true });
 

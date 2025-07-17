@@ -1,4 +1,5 @@
 const TravelEntry = require("../models/TravelEntry");
+const sendNotification = require("../utils/sendNotification");
 
 //creating entries
 exports.createEntry = async (req, res) => {

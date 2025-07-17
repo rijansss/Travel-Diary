@@ -14,6 +14,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "Password is required"]
   },  
+  isAdmin: {
+  type: Boolean,
+  default: true,
+}
+
 }, { timestamps: true });
 
 module.exports = mongoose.model("User", userSchema);
